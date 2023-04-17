@@ -1,6 +1,8 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.dto;
 
 import lombok.*;
+
+import javax.validation.constraints.Email;
 
 @Getter
 @Setter
@@ -8,8 +10,9 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class UserDto {
     private long id;
     private String name;
+    @Email
     private String email;
 }
