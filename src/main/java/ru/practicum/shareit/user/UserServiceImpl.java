@@ -78,12 +78,11 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkEmailUniqueness(UserDto user) {
-        long coincidencesCount = getAll().stream()
-                .filter(userToCompare -> userToCompare.getEmail().equals(user.getEmail())
-                        && userToCompare.getId() != user.getId())
-                .count();
+        boolean isEmailAlreadyExist = getAll().stream()
+                .anyMatch(userToCompare -> userToCompare.getEmail().equals(user.getEmail())
+                        && userToCompare.getId() != user.getId());
 
-        if (coincidencesCount > 0) {
+        if (isEmailAlreadyExist) {
             log.warn("Выполнена попытка создать пользователя с почтой, которая уже есть в базе: {}", user.getEmail());
             throw new AlreadyExistException(String.format(USER_ALREADY_EXISTS_MESSAGE, user.getEmail()));
         }

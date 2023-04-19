@@ -12,8 +12,8 @@ import java.util.Map;
 @Repository
 @Slf4j
 public class InMemoryItemStorage implements ItemStorage {
-    long currentId;
     private final Map<Long, Map<Long, Item>> items;
+    private long currentId;
 
     public InMemoryItemStorage() {
         items = new HashMap<>();
