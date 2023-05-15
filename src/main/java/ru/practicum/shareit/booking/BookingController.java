@@ -23,8 +23,8 @@ public class BookingController {
     private static final String DEFAULT_SEARCH_VALUE = "ALL";
 
     @PostMapping
-    public BookingDto createItem(@Valid @RequestBody BookingCreationDto bookingDto,
-                                 @RequestHeader(HEADER_WITH_USER_ID_NAME) @Positive long userId) {
+    public BookingDto createBooking(@Valid @RequestBody BookingCreationDto bookingDto,
+                                    @RequestHeader(HEADER_WITH_USER_ID_NAME) @Positive long userId) {
         log.info("Попытка забронировать вещь с id = {} пользователем с id = {}", bookingDto.getItemId(), userId);
         return bookingService.createBooking(bookingDto, userId);
     }

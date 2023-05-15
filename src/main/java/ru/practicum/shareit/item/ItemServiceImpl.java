@@ -36,9 +36,6 @@ public class ItemServiceImpl implements ItemService {
     private final BookingStorage bookingStorage;
     private final CommentStorage commentStorage;
 
-    /* Хотела этот метод сделать аналогично методам для пользователя через блок try-catch, но в таком случае при попытке
-    создать вещь у пользователя, который не существует, будет увеличиваться счетчик последовательности в бд, из-за этого
-    не будут проходить тесты. Поэтому пришлось сделать дополнительный запрос к бд. */
     @Override
     public ItemDto createItem(long userId, ItemDto itemDto) {
         itemDto.setId(0);
