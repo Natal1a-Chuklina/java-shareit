@@ -1,12 +1,14 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Transactional(readOnly = true)
 public interface BookingStorage extends JpaRepository<Booking, Long> {
     List<Booking> findByBooker_IdOrderByStartDesc(Long bookerId);
 
@@ -33,4 +35,7 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
     List<Booking> findByItem_IdAndItem_User_IdAndStatusOrderByStartAsc(Long itemId, Long ownerId, Status status);
 
     boolean existsByItem_IdAndBooker_IdAndStatusAndEndBefore(Long itemId, Long userId, Status status, LocalDateTime end);
+
+    List<Booking> findByItem_IdAndEndAfterAndStatusOrderByStartAsc(Long itemId, LocalDateTime end, Status status);
+
 }

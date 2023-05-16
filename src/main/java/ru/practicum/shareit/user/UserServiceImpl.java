@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.AlreadyExistException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -31,6 +33,7 @@ public class UserServiceImpl implements UserService {
     public static final int START_PAGE = 0;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> getAll() {
         List<UserDto> allUsers = new ArrayList<>();
 
@@ -52,6 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public UserDto createUser(UserDto user) {
         user.setId(0);
         validateUser(user);
@@ -67,6 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDto getUser(long userId) {
         Optional<User> user = userStorage.findById(userId);
 
@@ -80,6 +85,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public UserDto updateUser(UserDto user) {
         Optional<User> currentUser = userStorage.findById(user.getId());
 
@@ -89,6 +95,11 @@ public class UserServiceImpl implements UserService {
         }
 
         if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            if (userStorage.existsByEmailAndIdNot(user.getEmail(), user.getId())) {
+                log.warn("Выполнена попытка установить пользователю почту, которая уже есть в базе: {}", user.getEmail());
+                throw new AlreadyExistException(String.format(USER_ALREADY_EXISTS_MESSAGE, user.getEmail()));
+            }
+
             currentUser.get().setEmail(user.getEmail());
         }
 
@@ -96,18 +107,9 @@ public class UserServiceImpl implements UserService {
             currentUser.get().setName(user.getName());
         }
 
-        /* Не понимаю почему в лог выводится stack trace ошибки (DataIntegrityViolationException), хотя программа
-         заходит в блок catch, т.е. это исключение отлавливается. Кроме того в методе createUser(UserDto user) строки
-         57-64 практически идентичны строкам 101-108 этого метода, но там stack trace этой же ошибки не выводится. */
-
-        try {
-            User updatedUser = userStorage.save(currentUser.get());
-            log.info("Обновлена информация о пользователе с id = {}", updatedUser.getId());
-            return UserMapper.toUserDto(updatedUser);
-        } catch (DataIntegrityViolationException e) {
-            log.warn("Выполнена попытка установить пользователю почту, которая уже есть в базе: {}", user.getEmail());
-            throw new AlreadyExistException(String.format(USER_ALREADY_EXISTS_MESSAGE, user.getEmail()));
-        }
+        User updatedUser = userStorage.save(currentUser.get());
+        log.info("Обновлена информация о пользователе с id = {}", updatedUser.getId());
+        return UserMapper.toUserDto(updatedUser);
     }
 
     @Override

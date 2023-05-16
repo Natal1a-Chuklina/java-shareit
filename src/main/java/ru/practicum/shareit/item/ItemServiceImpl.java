@@ -3,6 +3,8 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingStorage;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -30,6 +32,7 @@ import static ru.practicum.shareit.utils.Constants.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
@@ -37,6 +40,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentStorage commentStorage;
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ItemDto createItem(long userId, ItemDto itemDto) {
         itemDto.setId(0);
 
@@ -52,6 +56,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ItemDto updateItem(long userId, ItemDto itemDto) {
         Optional<Item> currentItem = itemStorage.findById(itemDto.getId());
 
@@ -149,6 +154,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public CommentDto createComment(CommentDto commentDto, long userId, long itemId) {
         if (!bookingStorage.existsByItem_IdAndBooker_IdAndStatusAndEndBefore(itemId, userId, Status.APPROVED,
                 LocalDateTime.now())) {

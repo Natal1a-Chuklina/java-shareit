@@ -29,5 +29,7 @@ public class Constants {
     public static final String USER_CANNOT_LEAVE_COMMENT_MESSAGE = "Отзыв на вещь может оставить только тот пользователь, " +
             "который брал ее в аренду, и только после окончания срока аренды";
     public static final String USER_CANNOT_LEAVE_COMMENT_TWICE_MESSAGE = "Нельзя оставить больше одного отзыва на вещь";
+    public static final String TIME_NOT_AVAILABLE_FOR_BOOKING_MESSAGE = "Нельзя забронировать вещь с %s по %s, так как " +
+            "она уже забронирована на это время";
     public static final String HEADER_WITH_USER_ID_NAME = "X-Sharer-User-Id";
 }

@@ -3,12 +3,15 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingCreationDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.SearchingState;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingMapper;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.exception.AlreadyExistException;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemStorage;
@@ -18,6 +21,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utils.Constants;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,12 +30,15 @@ import static ru.practicum.shareit.utils.Constants.USER_CANNOT_CHANGE_BOOKING_ST
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm dd.MM.yy");
     private final BookingStorage bookingStorage;
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public BookingDto createBooking(BookingCreationDto bookingDto, long userId) {
         checkTimeCorrectness(bookingDto.getStart(), bookingDto.getEnd());
 
@@ -61,6 +68,8 @@ public class BookingServiceImpl implements BookingService {
             throw new SecurityException(Constants.USER_CANNOT_BOOK_HIS_ITEM_MESSAGE);
         }
 
+        checkTimeCrossings(bookingDto.getStart(), bookingDto.getEnd(), item.get().getId());
+
         Booking createdBooking = bookingStorage.save(BookingMapper.toBooking(bookingDto, user.get(), item.get()));
         log.info("Создано бронирование с id = {} пользователем с id = {} на вещь с id = {}", createdBooking.getId(),
                 userId, bookingDto.getItemId());
@@ -68,6 +77,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public BookingDto setBookingStatus(long userId, long bookingId, boolean approved) {
         Booking booking = getBookingById(bookingId);
 
@@ -210,6 +220,21 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             log.warn("Выполнена попытка получить список бронирований по несуществующему статусу {}", state);
             throw new IllegalArgumentException(String.format(Constants.UNKNOWN_SEARCHING_STATE_MESSAGE, state));
+        }
+    }
+
+    private void checkTimeCrossings(LocalDateTime bookingStart, LocalDateTime bookingEnd, long itemId) {
+        List<Booking> bookings = bookingStorage.findByItem_IdAndEndAfterAndStatusOrderByStartAsc(itemId,
+                LocalDateTime.now(), Status.APPROVED);
+
+        for (Booking booking : bookings) {
+            if ((bookingStart.isAfter(booking.getStart()) && bookingStart.isBefore(booking.getEnd()))
+                    || (bookingStart.isBefore(booking.getStart()) && bookingEnd.isAfter(booking.getStart()))) {
+                log.warn("Выполнена попытка создать бронирование вещи с id = {}, пересекающееся по времени с уже" +
+                        " подтвержденным бронированием с id = {}", itemId, booking.getId());
+                throw new AlreadyExistException(String.format(Constants.TIME_NOT_AVAILABLE_FOR_BOOKING_MESSAGE,
+                        bookingStart.format(FORMATTER), bookingEnd.format(FORMATTER)));
+            }
         }
     }
 }
