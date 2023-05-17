@@ -4,11 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemWithBookingDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
+
+import static ru.practicum.shareit.utils.Constants.HEADER_WITH_USER_ID_NAME;
 
 @RestController
 @RequestMapping("/items")
@@ -17,7 +21,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private static final String HEADER_WITH_USER_ID_NAME = "X-Sharer-User-Id";
 
     @PostMapping
     public ItemDto createItem(@RequestHeader(HEADER_WITH_USER_ID_NAME) @Positive long userId,
@@ -28,7 +31,7 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestHeader(HEADER_WITH_USER_ID_NAME) @Positive long userId,
-                              @RequestBody ItemDto itemDto, @PathVariable long itemId) {
+                              @RequestBody ItemDto itemDto, @PathVariable @Positive long itemId) {
         log.info("Попытка обновить вещь с id = {} пользователем с id = {}", itemId, userId);
         itemDto.setId(itemId);
 
@@ -36,13 +39,14 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@PathVariable @Positive long itemId) {
-        log.info("Попытка получить вешь с id = {}", itemId);
-        return itemService.getItem(itemId);
+    public ItemWithBookingDto getItem(@RequestHeader(HEADER_WITH_USER_ID_NAME) @Positive long userId,
+                                      @PathVariable @Positive long itemId) {
+        log.info("Попытка получить вещь с id = {} пользователем с id = {}", itemId, userId);
+        return itemService.getItem(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getUsersItems(@RequestHeader(HEADER_WITH_USER_ID_NAME) @Positive long userId) {
+    public List<ItemWithBookingDto> getUsersItems(@RequestHeader(HEADER_WITH_USER_ID_NAME) @Positive long userId) {
         log.info("Попытка получить все вещи пользователя с id = {}", userId);
         return itemService.getUsersItems(userId);
     }
@@ -50,7 +54,13 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam String text) {
         log.info("Попытка найти вещи по поисковой строке: {}", text);
-
         return itemService.searchItems(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@RequestHeader(HEADER_WITH_USER_ID_NAME) @Positive long userId,
+                                    @PathVariable @Positive long itemId, @Valid @RequestBody CommentDto commentDto) {
+        log.info("Попытка оставить отзыв на вещь с id = {} пользователем с id = {}", itemId, userId);
+        return itemService.createComment(commentDto, userId, itemId);
     }
 }
