@@ -9,6 +9,7 @@ public class Constants {
     public static final String NOT_EMPTY_EMAIL_MESSAGE = "Почта должна быть заполнена и не должна быть пустой";
     public static final String USER_ALREADY_EXISTS_MESSAGE = "Пользователь с почтой %s уже существует";
     public static final String USER_NOT_FOUND_MESSAGE = "Пользователь с идентификатором %d не найден";
+    public static final String REQUEST_NOT_FOUND_MESSAGE = "Запрос на вещь с идентификатором %d не найден";
     public static final String ITEM_NOT_FOUND_MESSAGE = "Вещь с идентификатором %d не найдена";
     public static final String USERS_ITEM_NOT_FOUND_MESSAGE = "Вещь с идентификатором %d не найдена у пользователя " +
             "с идентификатором %d";
@@ -32,4 +33,6 @@ public class Constants {
     public static final String TIME_NOT_AVAILABLE_FOR_BOOKING_MESSAGE = "Нельзя забронировать вещь с %s по %s, так как " +
             "она уже забронирована на это время";
     public static final String HEADER_WITH_USER_ID_NAME = "X-Sharer-User-Id";
+    public static final String DEFAULT_PAGE_SIZE = "20";
+    public static final String DEFAULT_START_PAGE = "0";
 }
