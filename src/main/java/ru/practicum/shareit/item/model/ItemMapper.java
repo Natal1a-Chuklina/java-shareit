@@ -42,6 +42,7 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
+                item.getItemRequest() == null ? null : item.getItemRequest().getId(),
                 BookingMapper.toSimpleBookingDto(lastBooking),
                 BookingMapper.toSimpleBookingDto(nextBooking),
                 CommentMapper.toCommentDto(comments)

@@ -18,8 +18,8 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
 
     Page<Booking> findByBooker_IdAndStartAfter(Long bookerId, LocalDateTime time, Pageable pageable);
 
-    Page<Booking> findByBooker_IdAndStartBeforeAndEndAfter(Long bookerId, LocalDateTime time1,
-                                                           LocalDateTime time2, Pageable pageable);
+    Page<Booking> findByBooker_IdAndStartBeforeAndEndAfter(Long bookerId, LocalDateTime time1, LocalDateTime time2,
+                                                           Pageable pageable);
 
     Page<Booking> findByBooker_IdAndStatus(Long bookerId, Status status, Pageable pageable);
 
@@ -38,6 +38,6 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
 
     boolean existsByItem_IdAndBooker_IdAndStatusAndEndBefore(Long itemId, Long userId, Status status, LocalDateTime end);
 
-    List<Booking> findByItem_IdAndEndAfterAndStatusOrderByStartAsc(Long itemId, LocalDateTime end, Status status);
+    List<Booking> findByItem_IdAndEndAfterAndStatusOrderByStartAsc(Long itemIdLong, LocalDateTime end, Status status);
 
 }

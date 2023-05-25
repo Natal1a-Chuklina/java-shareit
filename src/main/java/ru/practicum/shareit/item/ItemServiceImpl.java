@@ -189,6 +189,7 @@ public class ItemServiceImpl implements ItemService {
             throw new AlreadyExistException(USER_CANNOT_LEAVE_COMMENT_TWICE_MESSAGE);
         }
 
+        commentDto.setId(0L);
         User userRef = userStorage.getReferenceById(userId);
         Item itemRef = itemStorage.getReferenceById(itemId);
 

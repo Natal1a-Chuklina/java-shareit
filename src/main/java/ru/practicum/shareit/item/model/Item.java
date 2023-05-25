@@ -31,6 +31,10 @@ public class Item {
     @ToString.Exclude
     private ItemRequest itemRequest;
 
+    public Item(long itemId) {
+        this.id = itemId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
