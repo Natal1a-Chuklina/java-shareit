@@ -20,6 +20,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utils.Constants;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -273,10 +274,12 @@ class BookingServiceImplTest {
         User user = new User(userId, "name", "mail@mail.ru");
         Item item = new Item(1L, "name", "description", true, new User(userId),
                 null);
-        Booking booking = new Booking(1L, Status.WAITING, item, user, LocalDateTime.now().plusHours(4),
-                LocalDateTime.now().plusHours(7));
-        Booking updatedBooking = new Booking(1L, Status.APPROVED, item, user, LocalDateTime.now().plusHours(4),
-                LocalDateTime.now().plusHours(7));
+        Booking booking = new Booking(1L, Status.WAITING, item, user,
+                LocalDateTime.now().plusHours(4).truncatedTo(ChronoUnit.MILLIS),
+                LocalDateTime.now().plusHours(7).truncatedTo(ChronoUnit.MILLIS));
+        Booking updatedBooking = new Booking(1L, Status.APPROVED, item, user,
+                LocalDateTime.now().plusHours(4).truncatedTo(ChronoUnit.MILLIS),
+                LocalDateTime.now().plusHours(7).truncatedTo(ChronoUnit.MILLIS));
         BookingDto expectedDto = new BookingDto(1L, booking.getStart(), booking.getEnd(), Status.APPROVED,
                 new UserDto(userId, "name", "mail@mail.ru"), new ItemDto(1L, "name",
                 "description", true, null));
@@ -315,10 +318,12 @@ class BookingServiceImplTest {
         User user = new User(userId, "name", "mail@mail.ru");
         Item item = new Item(1L, "name", "description", true, new User(userId),
                 null);
-        Booking booking = new Booking(1L, Status.WAITING, item, user, LocalDateTime.now().plusHours(4),
-                LocalDateTime.now().plusHours(7));
-        Booking updatedBooking = new Booking(1L, Status.REJECTED, item, user, LocalDateTime.now().plusHours(4),
-                LocalDateTime.now().plusHours(7));
+        Booking booking = new Booking(1L, Status.WAITING, item, user,
+                LocalDateTime.now().plusHours(4).truncatedTo(ChronoUnit.MILLIS),
+                LocalDateTime.now().plusHours(7).truncatedTo(ChronoUnit.MILLIS));
+        Booking updatedBooking = new Booking(1L, Status.REJECTED, item, user,
+                LocalDateTime.now().plusHours(4).truncatedTo(ChronoUnit.MILLIS),
+                LocalDateTime.now().plusHours(7).truncatedTo(ChronoUnit.MILLIS));
         BookingDto expectedDto = new BookingDto(1L, booking.getStart(), booking.getEnd(), Status.REJECTED,
                 new UserDto(userId, "name", "mail@mail.ru"), new ItemDto(1L, "name",
                 "description", true, null));
