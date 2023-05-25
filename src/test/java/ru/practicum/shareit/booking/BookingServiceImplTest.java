@@ -274,13 +274,11 @@ class BookingServiceImplTest {
         User user = new User(userId, "name", "mail@mail.ru");
         Item item = new Item(1L, "name", "description", true, new User(userId),
                 null);
-        Booking booking = new Booking(1L, Status.WAITING, item, user,
-                LocalDateTime.now().plusHours(4).truncatedTo(ChronoUnit.MILLIS),
-                LocalDateTime.now().plusHours(7).truncatedTo(ChronoUnit.MILLIS));
-        Booking updatedBooking = new Booking(1L, Status.APPROVED, item, user,
-                LocalDateTime.now().plusHours(4).truncatedTo(ChronoUnit.MILLIS),
-                LocalDateTime.now().plusHours(7).truncatedTo(ChronoUnit.MILLIS));
-        BookingDto expectedDto = new BookingDto(1L, booking.getStart(), booking.getEnd(), Status.APPROVED,
+        LocalDateTime start = LocalDateTime.now().plusHours(4).truncatedTo(ChronoUnit.MILLIS);
+        LocalDateTime end = LocalDateTime.now().plusHours(7).truncatedTo(ChronoUnit.MILLIS);
+        Booking booking = new Booking(1L, Status.WAITING, item, user, start, end);
+        Booking updatedBooking = new Booking(1L, Status.APPROVED, item, user, start, end);
+        BookingDto expectedDto = new BookingDto(1L, start, end, Status.APPROVED,
                 new UserDto(userId, "name", "mail@mail.ru"), new ItemDto(1L, "name",
                 "description", true, null));
         when(bookingStorage.findById(bookingId)).thenReturn(Optional.of(booking));
@@ -318,13 +316,11 @@ class BookingServiceImplTest {
         User user = new User(userId, "name", "mail@mail.ru");
         Item item = new Item(1L, "name", "description", true, new User(userId),
                 null);
-        Booking booking = new Booking(1L, Status.WAITING, item, user,
-                LocalDateTime.now().plusHours(4).truncatedTo(ChronoUnit.MILLIS),
-                LocalDateTime.now().plusHours(7).truncatedTo(ChronoUnit.MILLIS));
-        Booking updatedBooking = new Booking(1L, Status.REJECTED, item, user,
-                LocalDateTime.now().plusHours(4).truncatedTo(ChronoUnit.MILLIS),
-                LocalDateTime.now().plusHours(7).truncatedTo(ChronoUnit.MILLIS));
-        BookingDto expectedDto = new BookingDto(1L, booking.getStart(), booking.getEnd(), Status.REJECTED,
+        LocalDateTime start = LocalDateTime.now().plusHours(4).truncatedTo(ChronoUnit.MILLIS);
+        LocalDateTime end = LocalDateTime.now().plusHours(7).truncatedTo(ChronoUnit.MILLIS);
+        Booking booking = new Booking(1L, Status.WAITING, item, user, start, end);
+        Booking updatedBooking = new Booking(1L, Status.REJECTED, item, user, start, end);
+        BookingDto expectedDto = new BookingDto(1L, start, end, Status.REJECTED,
                 new UserDto(userId, "name", "mail@mail.ru"), new ItemDto(1L, "name",
                 "description", true, null));
         when(bookingStorage.findById(bookingId)).thenReturn(Optional.of(booking));
