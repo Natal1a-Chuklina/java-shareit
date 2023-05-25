@@ -531,17 +531,16 @@ class BookingServiceImplITest {
         ItemDto item3 = itemService.createItem(user2.getId(), new ItemDto(0, "item3",
                 "item3 of user2", true, null));
         BookingDto bookingDto1 = bookingService.createBooking(new BookingCreationDto(item3.getId(),
-                LocalDateTime.now().minusDays(2).truncatedTo(ChronoUnit.MILLIS),
-                LocalDateTime.now().minusDays(1).truncatedTo(ChronoUnit.MILLIS)), user1.getId());
+                LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1)), user1.getId());
         bookingService.setBookingStatus(user2.getId(), bookingDto1.getId(), true);
         BookingDto bookingDto2 = bookingService.createBooking(new BookingCreationDto(item1.getId(),
-                LocalDateTime.now().minusDays(1).truncatedTo(ChronoUnit.MILLIS),
-                LocalDateTime.now().plusDays(2).truncatedTo(ChronoUnit.MILLIS)), user2.getId());
+                LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(2)), user2.getId());
         BookingDto bookingDto3 = bookingService.createBooking(new BookingCreationDto(item2.getId(),
-                LocalDateTime.now().minusDays(2).truncatedTo(ChronoUnit.MILLIS),
-                LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.MILLIS)), user2.getId());
-        BookingDto expectedBookingDto1 = bookingService.setBookingStatus(user1.getId(), bookingDto2.getId(), false);
-        BookingDto expectedBookingDto2 = bookingService.setBookingStatus(user1.getId(), bookingDto3.getId(), false);
+                LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(3)), user2.getId());
+        BookingDto expectedBookingDto1 = bookingService.setBookingStatus(user1.getId(), bookingDto2.getId(),
+                false);
+        BookingDto expectedBookingDto2 = bookingService.setBookingStatus(user1.getId(), bookingDto3.getId(),
+                false);
 
         assertThatCode(() -> {
             List<BookingDto> requests = bookingService.getBookingsByOwnerId(user2.getId(), "REJECTED", 0, 20);
