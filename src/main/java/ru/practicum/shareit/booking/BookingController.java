@@ -6,8 +6,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingCreationDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.utils.Constants;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -45,15 +47,21 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getBookingsByBookerId(@RequestHeader(HEADER_WITH_USER_ID_NAME) @Positive long userId,
-                                                  @RequestParam(defaultValue = DEFAULT_SEARCH_VALUE) String state) {
-        log.info("Попытка получить все бронирования со статусом {} автора бронирований с id = {}", state, userId);
-        return bookingService.getBookingsByBookerId(userId, state);
+                                                  @RequestParam(defaultValue = DEFAULT_SEARCH_VALUE) String state,
+                                                  @RequestParam(defaultValue = Constants.DEFAULT_START_PAGE) @Min(0) int from,
+                                                  @RequestParam(defaultValue = Constants.DEFAULT_PAGE_SIZE) @Positive int size) {
+        log.info("Попытка получить {} бронирований начиная с {} со статусом {} автора бронирований с id = {}", size,
+                from, state, userId);
+        return bookingService.getBookingsByBookerId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getBookingsByOwnerId(@RequestHeader(HEADER_WITH_USER_ID_NAME) @Positive long userId,
-                                                 @RequestParam(defaultValue = DEFAULT_SEARCH_VALUE) String state) {
-        log.info("Попытка получить все бронирования со статусом {} владельца вещей с id = {}", state, userId);
-        return bookingService.getBookingsByOwnerId(userId, state);
+                                                 @RequestParam(defaultValue = DEFAULT_SEARCH_VALUE) String state,
+                                                 @RequestParam(defaultValue = Constants.DEFAULT_START_PAGE) @Min(0) int from,
+                                                 @RequestParam(defaultValue = Constants.DEFAULT_PAGE_SIZE) @Positive int size) {
+        log.info("Попытка получить {} бронирований начиная с {} со статусом {} владельца вещей с id = {}", size, from,
+                state, userId);
+        return bookingService.getBookingsByOwnerId(userId, state, from, size);
     }
 }

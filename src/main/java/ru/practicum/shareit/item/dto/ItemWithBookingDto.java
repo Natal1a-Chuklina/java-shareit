@@ -8,6 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemWithBookingDto {
@@ -15,6 +16,7 @@ public class ItemWithBookingDto {
     private String name;
     private String description;
     private Boolean available;
+    private Long requestId;
     private SimpleBookingDto lastBooking;
     private SimpleBookingDto nextBooking;
     private List<CommentDto> comments;

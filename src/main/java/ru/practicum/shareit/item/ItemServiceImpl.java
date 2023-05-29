@@ -2,6 +2,10 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +21,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.CommentMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemMapper;
+import ru.practicum.shareit.request.ItemRequestStorage;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserStorage;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utils.Constants;
@@ -38,6 +44,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserStorage userStorage;
     private final BookingStorage bookingStorage;
     private final CommentStorage commentStorage;
+    private final ItemRequestStorage itemRequestStorage;
 
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -49,8 +56,16 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException(String.format(USER_NOT_FOUND_MESSAGE, userId));
         }
 
+        if (itemDto.getRequestId() != null && !itemRequestStorage.existsById(itemDto.getRequestId())) {
+            log.warn("Выполнена попытка использовать несуществующий id запроса при создании вещи: {}",
+                    itemDto.getRequestId());
+            throw new NotFoundException(String.format(REQUEST_NOT_FOUND_MESSAGE, itemDto.getRequestId()));
+        }
+
         User userRef = userStorage.getReferenceById(userId);
-        Item savedItem = itemStorage.save(ItemMapper.toItem(itemDto, userRef));
+        ItemRequest itemRequest = itemDto.getRequestId() == null ? null :
+                itemRequestStorage.getReferenceById(itemDto.getRequestId());
+        Item savedItem = itemStorage.save(ItemMapper.toItem(itemDto, userRef, itemRequest));
         log.info("Создана вещь с id = {} у пользователя с id = {}", savedItem.getId(), userId);
         return ItemMapper.toItemDto(savedItem);
     }
@@ -120,8 +135,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemWithBookingDto> getUsersItems(long userId) {
-        List<Item> items = itemStorage.findByUser_IdOrderByIdAsc(userId);
+    public List<ItemWithBookingDto> getUsersItems(long userId, int from, int size) {
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        Pageable page = PageRequest.of(from / size, size, sortById);
+        Page<Item> items = itemStorage.findByUser_Id(userId, page);
         List<ItemWithBookingDto> mappedItems = new ArrayList<>();
 
         for (Item item : items) {
@@ -136,21 +153,24 @@ public class ItemServiceImpl implements ItemService {
             mappedItems.add(ItemMapper.toItemWithBookingDto(item, bookings[0], bookings[1], comments));
         }
 
-        log.info("Получен список вещей пользователя с id = {} длиной {}", userId, items.size());
+        log.info("Получен список вещей пользователя с id = {} длиной {}", userId, mappedItems.size());
         return mappedItems;
     }
 
     @Override
-    public List<ItemDto> searchItems(String text) {
+    public List<ItemDto> searchItems(String text, int from, int size) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
 
-        List<Item> searchedItems = itemStorage
-                .findByDescriptionContainingAndAvailableTrueOrNameContainingAndAvailableTrueAllIgnoreCase(text, text);
+        Pageable page = PageRequest.of(from / size, size);
+        Page<Item> searchedItems = itemStorage
+                .findByDescriptionContainingAndAvailableTrueOrNameContainingAndAvailableTrueAllIgnoreCase(text, text,
+                        page);
 
-        log.info("Получен список вещей длиной {}, найденный по поисковой строке: {}", searchedItems.size(), text);
-        return ItemMapper.toItemDto(searchedItems);
+        log.info("Получен список вещей длиной {}, найденный по поисковой строке: {}", searchedItems.getContent().size(),
+                text);
+        return ItemMapper.toItemDto(searchedItems.getContent());
     }
 
     @Override
@@ -169,6 +189,7 @@ public class ItemServiceImpl implements ItemService {
             throw new AlreadyExistException(USER_CANNOT_LEAVE_COMMENT_TWICE_MESSAGE);
         }
 
+        commentDto.setId(0L);
         User userRef = userStorage.getReferenceById(userId);
         Item itemRef = itemStorage.getReferenceById(itemId);
 
