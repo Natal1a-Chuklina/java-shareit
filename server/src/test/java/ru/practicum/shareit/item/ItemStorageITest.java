@@ -139,7 +139,7 @@ class ItemStorageITest {
     }
 
     @Test
-    void findByDescription_WhenItemsWithSearchStringExistAndAvailable_ThenReturnEmptyPage() {
+    void findByDescription_WhenItemsWithSearchStringExistAndAvailable_ThenReturnNotEmptyPage() {
         User user = userStorage.save(new User(0L, "name", "mail@mail.ru"));
         Item item1 = itemStorage.save(new Item(0L, "name1", "description1", true, user,
                 null));
@@ -217,7 +217,7 @@ class ItemStorageITest {
     }
 
     @Test
-    void existsByUser_IdAndId_WhenItemWithSuchIdAndUserIdNotExist_ThenReturnTrue() {
+    void existsByUser_IdAndId_WhenItemWithSuchIdAndUserIdNotExist_ThenReturnFalse() {
         User user = userStorage.save(new User(0L, "name", "mail@mail.ru"));
         Item item = itemStorage.save(new Item(0L, "name", "description", true, user,
                 null));
@@ -267,7 +267,7 @@ class ItemStorageITest {
     }
 
     @Test
-    void findByItemRequest_Id_WhenItemsWithRequestIdExist_ThenReturnEmptyList() {
+    void findByItemRequest_Id_WhenItemsWithRequestIdExist_ThenReturnNotEmptyList() {
         User user = userStorage.save(new User(0L, "name", "mail@mail.ru"));
         ItemRequest itemRequest = itemRequestStorage.save(new ItemRequest("description", user,
                 LocalDateTime.now().minusHours(1)));
@@ -277,7 +277,7 @@ class ItemStorageITest {
                 itemRequest));
 
         assertThatCode(() -> {
-            List<Item> result = itemStorage.findByItemRequest_Id(1L);
+            List<Item> result = itemStorage.findByItemRequest_Id(itemRequest.getId());
             assertThat(result)
                     .as("Проверка возвращаемого значения, когда в базе есть вещи по запросу с таким id")
                     .isNotNull()
