@@ -137,8 +137,9 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingStorage.findByBooker_IdAndStartAfter(userId, LocalDateTime.now(), page);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findByBooker_IdAndStartBeforeAndEndAfter(userId,
-                        LocalDateTime.now(), LocalDateTime.now(), page);
+                LocalDateTime currentTime = LocalDateTime.now();
+                bookings = bookingStorage.findByBooker_IdAndStartBeforeAndEndAfter(userId, currentTime, currentTime,
+                        page);
                 break;
             case WAITING:
                 bookings = bookingStorage.findByBooker_IdAndStatus(userId, Status.WAITING, page);
