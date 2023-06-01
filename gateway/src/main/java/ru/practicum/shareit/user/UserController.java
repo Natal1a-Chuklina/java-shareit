@@ -6,13 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.utils.Validator;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import javax.validation.constraints.Positive;
-
-import static ru.practicum.shareit.utils.Constants.NOT_EMPTY_EMAIL_MESSAGE;
-import static ru.practicum.shareit.utils.Constants.NOT_EMPTY_USER_NAME_MESSAGE;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -25,7 +22,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<Object> createUser(@Valid @RequestBody UserDto user) {
         log.info("Попытка создать пользователя");
-        validateUser(user);
+        Validator.validateUser(user);
         return userClient.createUser(user);
     }
 
@@ -51,17 +48,5 @@ public class UserController {
     public ResponseEntity<Object> updateUser(@PathVariable @Positive long userId, @Valid @RequestBody UserDto user) {
         log.info("Попытка обновить пользователя с id = {}", userId);
         return userClient.updateUser(user, userId);
-    }
-
-    private void validateUser(UserDto user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            log.warn("Выполнена попытка создать пользователя с некорректным именем: {}", user.getName());
-            throw new ValidationException(NOT_EMPTY_USER_NAME_MESSAGE);
-        }
-
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
-            log.warn("Выполнена попытка создать пользователя с некорректной почтой: {}", user.getEmail());
-            throw new ValidationException(NOT_EMPTY_EMAIL_MESSAGE);
-        }
     }
 }

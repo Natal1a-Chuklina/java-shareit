@@ -6,12 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingCreationDto;
-import ru.practicum.shareit.booking.dto.SearchingState;
+import ru.practicum.shareit.utils.Validator;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
-import java.time.LocalDateTime;
 
 import static ru.practicum.shareit.utils.Constants.*;
 
@@ -29,7 +28,7 @@ public class BookingController {
     public ResponseEntity<Object> createBooking(@Valid @RequestBody BookingCreationDto bookingDto,
                                                 @RequestHeader(HEADER_WITH_USER_ID_NAME) @Positive long userId) {
         log.info("Попытка забронировать вещь с id = {} пользователем с id = {}", bookingDto.getItemId(), userId);
-        checkTimeCorrectness(bookingDto.getStart(), bookingDto.getEnd());
+        Validator.checkTimeCorrectness(bookingDto.getStart(), bookingDto.getEnd());
         return bookingClient.createBooking(bookingDto, userId);
     }
 
@@ -54,7 +53,7 @@ public class BookingController {
                                                         @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) @Positive int size) {
         log.info("Попытка получить {} бронирований начиная с {} со статусом {} автора бронирований с id = {}", size,
                 from, state, userId);
-        return bookingClient.getBookingsByBookerId(userId, getSearchingState(state), from, size);
+        return bookingClient.getBookingsByBookerId(userId, Validator.getSearchingState(state), from, size);
     }
 
     @GetMapping("/owner")
@@ -64,22 +63,6 @@ public class BookingController {
                                                        @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) @Positive int size) {
         log.info("Попытка получить {} бронирований начиная с {} со статусом {} владельца вещей с id = {}", size, from,
                 state, userId);
-        return bookingClient.getBookingsByOwnerId(userId, getSearchingState(state), from, size);
-    }
-
-    private void checkTimeCorrectness(LocalDateTime start, LocalDateTime end) {
-        if (!start.isBefore(end)) {
-            log.warn("Выполнена попытка создать бронирование с некорректными датами: start = {}, end = {}", start, end);
-            throw new IllegalArgumentException(WRONG_START_AND_END_BOOKING_DATES_MESSAGE);
-        }
-    }
-
-    private SearchingState getSearchingState(String state) {
-        try {
-            return SearchingState.valueOf(state);
-        } catch (IllegalArgumentException e) {
-            log.warn("Выполнена попытка получить список бронирований по несуществующему статусу {}", state);
-            throw new IllegalArgumentException(String.format(UNKNOWN_SEARCHING_STATE_MESSAGE, state));
-        }
+        return bookingClient.getBookingsByOwnerId(userId, Validator.getSearchingState(state), from, size);
     }
 }
