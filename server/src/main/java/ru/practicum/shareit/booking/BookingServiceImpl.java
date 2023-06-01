@@ -181,8 +181,9 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingStorage.findByItem_User_IdAndEndBefore(userId, LocalDateTime.now(), page);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findByItem_User_IdAndStartBeforeAndEndAfter(userId,
-                        LocalDateTime.now(), LocalDateTime.now(), page);
+                LocalDateTime currentTime = LocalDateTime.now();
+                bookings = bookingStorage.findByItem_User_IdAndStartBeforeAndEndAfter(userId, currentTime, currentTime,
+                        page);
                 break;
             default:
                 throw new IllegalArgumentException(String.format(UNKNOWN_SEARCHING_STATE_MESSAGE, state));
