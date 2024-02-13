@@ -1,0 +1,38 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "description": "Documentation \"Share It\" API v1.0",
+    "title": "\"Share It\" API сервер",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "description": "Generated server url",
+      "url": "http://localhost:8080"
+    }
+  ],
+  "tags": [
+    {
+      "description": "API для работы с пользователями",
+      "name": "Пользователи"
+    },
+    {
+      "description": "API для работы с вещами",
+      "name": "Вещи"
+    },
+    {
+      "description": "API для работы с бронированиями",
+      "name": "Бронирования"
+    },
+    {
+      "description": "API для работы с запросами на вещи",
+      "name": "Запросы на вещи"
+    }
+  ],
+  "paths": {
+  },
+  "components": {
+    "schemas": {
+    }
+  }
+}
