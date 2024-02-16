@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -60,7 +60,7 @@ class UserControllerITest {
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse()
-                .getContentAsString(StandardCharsets.UTF_8))
+                .getContentAsString(Charset.defaultCharset()))
                 .contains(NOT_EMPTY_USER_NAME_MESSAGE);
 
         Mockito.verifyNoInteractions(userClient);
@@ -85,7 +85,7 @@ class UserControllerITest {
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse()
-                .getContentAsString(StandardCharsets.UTF_8))
+                .getContentAsString(Charset.defaultCharset()))
                 .contains(NOT_EMPTY_EMAIL_MESSAGE);
 
         Mockito.verifyNoInteractions(userClient);
