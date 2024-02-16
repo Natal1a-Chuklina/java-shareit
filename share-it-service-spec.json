@@ -30,9 +30,1837 @@
     }
   ],
   "paths": {
+    "/users": {
+      "post": {
+        "description": "Обратите внимание: почтовый адрес пользователя должен быть уникальным (Ожидается код ошибки 409)",
+        "operationId": "createUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            },
+            "description": "Пользователь создан"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Имя пользователя должно быть заполнено и не должно быть пустым"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Пользователь с почтой user@user.com уже существует"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Создание пользователя с уже существующей почтой"
+          }
+        },
+        "summary": "Добавление нового пользователя",
+        "tags": [
+          "Пользователи"
+        ]
+      },
+      "get": {
+        "operationId": "getAll",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserDto"
+                  }
+                }
+              }
+            },
+            "description": "Пользователи получены"
+          }
+        },
+        "summary": "Получение списка пользователей",
+        "tags": [
+          "Пользователи"
+        ]
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "operationId": "getUser",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            },
+            "description": "Пользователь найден"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "getUser.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Пользователь с идентификатором 3 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Пользователь не найден"
+          }
+        },
+        "summary": "Получение пользователя по id",
+        "tags": [
+          "Пользователи"
+        ]
+      },
+      "delete": {
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Пользователь удален"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "deleteUser.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Пользователь с идентификатором 3 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Пользователь не найден"
+          }
+        },
+        "summary": "Удаление пользователя по id",
+        "tags": [
+          "Пользователи"
+        ]
+      },
+      "patch": {
+        "description": "Обратите внимание: \n - почтовый адрес пользователя должен быть уникальным (Ожидается код ошибки 409)\n - если какие-то поля пустые или null, то их значения не будут обновлены",
+        "operationId": "updateUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            },
+            "description": "Информация о пользователе обновлена"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "updateUser.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Пользователь с идентификатором 3 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Пользователь не найден"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Пользователь с почтой user@user.com уже существует"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Обновление почты пользователя на уже существующую"
+          }
+        },
+        "summary": "Обновление информации о пользователе",
+        "tags": [
+          "Пользователи"
+        ]
+      }
+    },
+    "/items": {
+      "post": {
+        "operationId": "createItem",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemDto"
+                }
+              }
+            },
+            "description": "Вещь создана"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Validation failed for argument [1] in public org.springframework.http.ResponseEntity<java.lang.Object> ru.practicum.shareit.item.ItemController.createItem(long,ru.practicum.shareit.item.dto.ItemDto): [Field error in object 'itemDto' on field 'available': rejected value [null]; codes [NotNull.itemDto.available,NotNull.available,NotNull.java.lang.Boolean,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [itemDto.available,available]; arguments []; default message [available]]; default message [must not be null]]"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Пользователь с идентификатором 3 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Пользователь не найден"
+          }
+        },
+        "summary": "Создание вещи",
+        "tags": [
+          "Вещи"
+        ]
+      },
+      "get": {
+        "operationId": "getUsersItems",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          },
+          {
+            "description": "количество вещей, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество вещей в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ItemWithBookingDto"
+                  }
+                }
+              }
+            },
+            "description": "Вещи пользователя получены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "getUsersItems.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Получение вещей пользователя",
+        "tags": [
+          "Вещи"
+        ]
+      }
+    },
+    "/items/{itemId}": {
+      "get": {
+        "description": "Обратите внимание: информация о последнем и следующем бронированиях будет выведена только владельцу вещи",
+        "operationId": "getItem",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          },
+          {
+            "description": "id вещи",
+            "in": "path",
+            "name": "itemId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemWithBookingDto"
+                }
+              }
+            },
+            "description": "Вещь найдена"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "getItem.itemId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Вещь с идентификатором 10 не найдена"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Вещь не найдена"
+          }
+        },
+        "summary": "Получение вещи по id",
+        "tags": [
+          "Вещи"
+        ]
+      },
+      "patch": {
+        "description": "Обратите внимание: если какие-то поля пустые или null, то их значения не будут обновлены",
+        "operationId": "updateItem",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          },
+          {
+            "description": "id вещи",
+            "in": "path",
+            "name": "itemId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateItemDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemDto"
+                }
+              }
+            },
+            "description": "Информация о вещи обновлена"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "updateItem.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Вещь с идентификатором 2 не найдена у пользователя с идентификатором 7"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Вещь не найдена или пользователь не является ее владельцем"
+          }
+        },
+        "summary": "Обновление информации о вещи",
+        "tags": [
+          "Вещи"
+        ]
+      }
+    },
+    "/items/{itemId}/comment": {
+      "post": {
+        "description": "Обратите внимание: оставить комментарий на вещь может только тот пользователь, который ее арендовал, и только после истечения времени аренды (Ожидается код ошибки 400)",
+        "operationId": "createComment",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          },
+          {
+            "description": "id вещи",
+            "in": "path",
+            "name": "itemId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentDto"
+                }
+              }
+            },
+            "description": "Комментарий создан"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Отзыв на вещь может оставить только тот пользователь, который брал ее в аренду, и только после окончания срока аренды"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Попытка создать комментарий, если пользователь не бронировал эту вещь или срок бронирования не истек"
+          }
+        },
+        "summary": "Добавление комментария на вещь",
+        "tags": [
+          "Вещи"
+        ]
+      }
+    },
+    "/items/search": {
+      "get": {
+        "description": "Обратите внимание: если текст для поиска пустой, вернется пустой список вещей",
+        "operationId": "searchItems",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          },
+          {
+            "description": "текст для поиска в названии и описании вещи",
+            "in": "query",
+            "name": "text",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "количество вещей, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество вещей в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ItemDto"
+                  }
+                }
+              }
+            },
+            "description": "Вещи получены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "searchItems.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          }
+        },
+        "summary": "Получение вещей по поисковому запросу",
+        "tags": [
+          "Вещи"
+        ]
+      }
+    },
+    "/bookings": {
+      "post": {
+        "description": "Обратите внимание: \n - даты начала и конца бронирования должны быть позже текущего момента (Ожидается код ошибки 400)\n - дата конца бронирования должна быть позже даты начала (Ожидается код ошибки 400) \n - владелец не может забронировать свою вещь (Ожидается код ошибки 404) \n - нельзя забронировать недоступную для бронирования вещь (Ожидается код ошибки 400) \n - даты бронирования не должны пересекаться с уже существующими датами бронирования вещи (Ожидается код ошибки 409)",
+        "operationId": "createBooking",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingCreationDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingDto"
+                }
+              }
+            },
+            "description": "Бронирование создано"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Дата конца бронирования должна быть позже даты начала бронирования"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Вещь с идентификатором 100 не найдена"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Вещь не найдена"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Нельзя забронировать вещь с 20:45 22.03.24 по 20:46 23.03.24, так как она уже забронирована на это время"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Даты бронирования пересекаются с уже подтвержденными датами бронирования"
+          }
+        },
+        "summary": "Создание бронирования вещи",
+        "tags": [
+          "Бронирования"
+        ]
+      },
+      "get": {
+        "operationId": "getBookingsByBookerId",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          },
+          {
+            "description": "состояние бронирования",
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ALL",
+              "enum": [
+                "ALL",
+                "WAITING",
+                "REJECTED",
+                "FUTURE",
+                "PAST",
+                "CURRENT"
+              ]
+            }
+          },
+          {
+            "description": "количество бронирований, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество бронирований в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BookingDto"
+                  },
+                  "description": "Список бронирований пользователя"
+                }
+              }
+            },
+            "description": "Бронирования получены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "getBookingsByBookerId.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Пользователь с идентификатором 100 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Пользователь не найден"
+          }
+        },
+        "summary": "Получение бронирований пользователя",
+        "tags": [
+          "Бронирования"
+        ]
+      }
+    },
+    "/bookings/{bookingId}": {
+      "get": {
+        "description": "Обратите внимание: информацию о бронировании может получить либо владелец вещи, либо автор бронирования (Ожидается код ошибки 404)",
+        "operationId": "getBooking",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          },
+          {
+            "description": "id бронирования",
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingDto"
+                }
+              }
+            },
+            "description": "Бронирование найдено"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "getBooking.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Посмотреть бронирование могут только автор бронирования и владелец вещи"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Попытка получить бронирование не автором бронирования или владельцем вещи"
+          }
+        },
+        "summary": "Получение бронирования по id",
+        "tags": [
+          "Бронирования"
+        ]
+      },
+      "patch": {
+        "description": "Обратите внимание: \n - изменить статус бронирования может только владелец вещи (Ожидается код ошибки 404) \n - нельзя повторно изменить статус бронирования (Ожидается код ошибки 400)",
+        "operationId": "setBookingStatus",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          },
+          {
+            "description": "id бронирования",
+            "in": "path",
+            "name": "bookingId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          },
+          {
+            "description": "подтвердить/отклонить бронирование",
+            "in": "query",
+            "name": "approved",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingDto"
+                }
+              }
+            },
+            "description": "Бронирование подтверждено/отклонено"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Нельзя повторно изменить статус бронирования"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Попытка повторно изменить статус бронирования"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Изменить статус бронирования может только владелец вещи"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Попытка изменить статус бронирование не владельцем вещи"
+          }
+        },
+        "summary": "Подтверждение/отклонение бронирования владельцем вещи",
+        "tags": [
+          "Бронирования"
+        ]
+      }
+    },
+    "/bookings/owner": {
+      "get": {
+        "operationId": "getBookingsByOwnerId",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          },
+          {
+            "description": "состояние бронирования",
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ALL",
+              "enum": [
+                "ALL",
+                "WAITING",
+                "REJECTED",
+                "FUTURE",
+                "PAST",
+                "CURRENT"
+              ]
+            }
+          },
+          {
+            "description": "количество бронирований, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество бронирований в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BookingDto"
+                  },
+                  "description": "Список бронирований на вещи пользователя"
+                }
+              }
+            },
+            "description": "Бронирования получены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "getBookingsByOwnerId.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Пользователь с идентификатором 100 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Пользователь не найден"
+          }
+        },
+        "summary": "Получение бронирований на вещи пользователя",
+        "tags": [
+          "Бронирования"
+        ]
+      }
+    },
+    "/requests": {
+      "post": {
+        "operationId": "createItemRequest",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateItemRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemRequestDto"
+                }
+              }
+            },
+            "description": "Запрос на вещь создан"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "createItemRequest.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Пользователь с идентификатором 100 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Пользователь не найден"
+          }
+        },
+        "summary": "Создание запроса на вещь",
+        "tags": [
+          "Запросы на вещи"
+        ]
+      },
+      "get": {
+        "operationId": "getUsersRequests",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ItemRequestWithAnswersDto"
+                  }
+                }
+              }
+            },
+            "description": "Запросы получены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "createItemRequest.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Пользователь с идентификатором 100 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Пользователь не найден"
+          }
+        },
+        "summary": "Получение запросов пользователя",
+        "tags": [
+          "Запросы на вещи"
+        ]
+      }
+    },
+    "/requests/{requestId}": {
+      "get": {
+        "operationId": "getRequestById",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          },
+          {
+            "description": "id запроса",
+            "in": "path",
+            "name": "requestId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemRequestWithAnswersDto"
+                }
+              }
+            },
+            "description": "Запрос найден"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "getRequestById.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Пользователь с идентификатором 100 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Пользователь не найден"
+          }
+        },
+        "summary": "Получение запроса по id",
+        "tags": [
+          "Запросы на вещи"
+        ]
+      }
+    },
+    "/requests/all": {
+      "get": {
+        "operationId": "getAllRequests",
+        "parameters": [
+          {
+            "description": "id пользователя",
+            "in": "header",
+            "name": "X-Sharer-User-Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "format": "int64"
+            }
+          },
+          {
+            "description": "количество запросов, которые нужно пропустить для формирования текущего набора",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "description": "количество запросов в наборе",
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ItemRequestWithAnswersDto"
+                  }
+                }
+              }
+            },
+            "description": "Запросы получены"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "getAllRequests.userId: must be greater than 0"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Запрос составлен некорректно"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Пользователь с идентификатором 100 не найден"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Пользователь не найден"
+          }
+        },
+        "summary": "Получение всех запросов",
+        "tags": [
+          "Запросы на вещи"
+        ]
+      }
+    }
   },
   "components": {
     "schemas": {
+      "BookingCreationDto": {
+        "required": [
+          "itemId",
+          "start",
+          "end"
+        ],
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "integer",
+            "description": "Идентификатор вещи",
+            "format": "int64",
+            "example": 1
+          },
+          "start": {
+            "type": "string",
+            "description": "Дата и время начала бронирования в формате \"yyyy-MM-ddTHH:mm:ss\"",
+            "example": "2024-02-16T02:13:40"
+          },
+          "end": {
+            "type": "string",
+            "description": "Дата и время конца бронирования в формате \"yyyy-MM-ddTHH:mm:ss\"",
+            "example": "2024-02-17T02:13:40"
+          }
+        },
+        "description": "Данные для создания бронирования"
+      },
+      "BookingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64",
+            "readOnly": true,
+            "example": 1
+          },
+          "start": {
+            "type": "string",
+            "description": "Дата и время начала бронирования в формате \"yyyy-MM-ddTHH:mm:ss\"",
+            "example": "2024-02-16T02:13:40"
+          },
+          "end": {
+            "type": "string",
+            "description": "Дата и время конца бронирования в формате \"yyyy-MM-ddTHH:mm:ss\"",
+            "example": "2024-02-17T02:13:40"
+          },
+          "status": {
+            "type": "string",
+            "description": "Статус бронирования",
+            "example": "APPROVED",
+            "enum": [
+              "WAITING",
+              "APPROVED",
+              "REJECTED",
+              "CANCELED"
+            ]
+          },
+          "booker": {
+            "$ref": "#/components/schemas/UserDto"
+          },
+          "item": {
+            "$ref": "#/components/schemas/ItemDto"
+          }
+        },
+        "description": "Бронирование"
+      },
+      "CommentDto": {
+        "required": [
+          "text"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64",
+            "readOnly": true,
+            "example": 1
+          },
+          "text": {
+            "type": "string",
+            "description": "Содержимое комментария",
+            "example": "Хорошая, мощная дрель"
+          },
+          "authorName": {
+            "type": "string",
+            "readOnly": true,
+            "description": "Имя автора комментария",
+            "example": "Иванов Андрей"
+          },
+          "created": {
+            "type": "string",
+            "readOnly": true,
+            "description": "Дата и время создания комментария в формате \"yyyy-MM-ddTHH:mm:ss\"",
+            "example": "2024-02-19T14:13:30"
+          }
+        },
+        "description": "Комментарий"
+      },
+      "CreateItemRequestDto": {
+        "type": "object",
+        "required": [
+          "description"
+        ],
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Описание вещи, которую пользователь хочет арендовать",
+            "example": "Хотел бы арендовать граммофон"
+          }
+        },
+        "description": "Данные для создания запроса на вещь"
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Сообщение об ошибке",
+            "example": "Пользователь с почтой user@user.com уже существует"
+          }
+        },
+        "description": "Сведения об ошибке"
+      },
+      "ItemDto": {
+        "required": [
+          "name",
+          "description",
+          "available"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64",
+            "readOnly": true,
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Название вещи",
+            "example": "Дрель"
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание вещи",
+            "example": "Простая дрель"
+          },
+          "available": {
+            "type": "boolean",
+            "description": "Доступна ли вещь для аренды",
+            "example": true
+          },
+          "requestId": {
+            "type": "integer",
+            "description": "Идентификатор запроса, если вещь создается по запросу другого пользователя",
+            "format": "int64",
+            "example": null
+          }
+        },
+        "description": "Вещь"
+      },
+      "ItemRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64",
+            "readOnly": true,
+            "example": 1
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание вещи, которую пользователь хочет арендовать",
+            "example": "Хотел бы арендовать граммофон"
+          },
+          "created": {
+            "type": "string",
+            "description": "Дата и время создания запроса в формате \"yyyy-MM-ddTHH:mm:ss\"",
+            "example": "2024-02-16T02:13:40"
+          }
+        },
+        "description": "Запрос на вещь"
+      },
+      "ItemRequestWithAnswersDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64",
+            "readOnly": true,
+            "example": 1
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание вещи, которую пользователь хочет арендовать",
+            "example": "Хотел бы арендовать граммофон"
+          },
+          "created": {
+            "type": "string",
+            "description": "Дата и время создания запроса в формате \"yyyy-MM-ddTHH:mm:ss\"",
+            "example": "2024-02-16T02:13:40"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemDto"
+            },
+            "description": "Вещи, созданные по запросу"
+          }
+        },
+        "description": "Запрос на вещь с ответами"
+      },
+      "ItemWithBookingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64",
+            "readOnly": true,
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Название вещи",
+            "example": "Дрель"
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание вещи",
+            "example": "Простая дрель"
+          },
+          "available": {
+            "type": "boolean",
+            "description": "Доступна ли вещь для аренды",
+            "example": true
+          },
+          "requestId": {
+            "type": "integer",
+            "description": "Идентификатор запроса, если вещь создается по запросу другого пользователя",
+            "format": "int64",
+            "example": null
+          },
+          "lastBooking": {
+            "$ref": "#/components/schemas/SimpleBookingDto"
+          },
+          "nextBooking": {
+            "$ref": "#/components/schemas/SimpleBookingDto"
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CommentDto"
+            },
+            "description": "Список комментариев на вещь"
+          }
+        },
+        "description": "Вещь с информацией о бронированиях"
+      },
+      "SimpleBookingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64",
+            "example": 1
+          },
+          "start": {
+            "type": "string",
+            "description": "Дата и время начала бронирования в формате \"yyyy-MM-ddTHH:mm:ss\"",
+            "example": "2024-02-16T02:13:40"
+          },
+          "end": {
+            "type": "string",
+            "description": "Дата и время конца бронирования в формате \"yyyy-MM-ddTHH:mm:ss\"",
+            "example": "2024-02-17T02:13:40"
+          },
+          "status": {
+            "type": "string",
+            "description": "Статус бронирования",
+            "example": "APPROVED",
+            "enum": [
+              "WAITING",
+              "APPROVED",
+              "REJECTED",
+              "CANCELED"
+            ]
+          },
+          "bookerId": {
+            "type": "integer",
+            "description": "Идентификатор пользователя, который забронировал вещь",
+            "format": "int64",
+            "readOnly": true,
+            "example": 1
+          }
+        },
+        "description": "Краткие сведения о бронировании"
+      },
+      "UpdateItemDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Название вещи",
+            "example": "Дрель"
+          },
+          "description": {
+            "type": "string",
+            "description": "Описание вещи",
+            "example": "Простая дрель"
+          },
+          "available": {
+            "type": "boolean",
+            "description": "Доступна ли вещь для аренды",
+            "example": true
+          },
+          "requestId": {
+            "type": "integer",
+            "description": "Идентификатор запроса, если вещь создается по запросу другого пользователя",
+            "format": "int64",
+            "example": null
+          }
+        },
+        "description": "Данные для обновления вещи"
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Имя",
+            "example": "Петров Иван"
+          },
+          "email": {
+            "type": "string",
+            "description": "Почтовый адрес",
+            "example": "petrov.i@practicummail.ru"
+          }
+        },
+        "description": "Данные для обновления пользователя"
+      },
+      "UserDto": {
+        "required": [
+          "name",
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Идентификатор",
+            "format": "int64",
+            "readOnly": true,
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Имя",
+            "example": "Петров Иван"
+          },
+          "email": {
+            "type": "string",
+            "description": "Почтовый адрес",
+            "example": "petrov.i@practicummail.ru"
+          }
+        },
+        "description": "Пользователь"
+      }
     }
   }
 }
